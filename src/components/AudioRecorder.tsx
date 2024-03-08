@@ -120,7 +120,7 @@ export default function AudioRecorder(props: {
 
     return (
         <div className='flex flex-col justify-center items-center'>
-            <button
+            {!recordedBlob && (<button
                 type='button'
                 className={`m-2 inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 transition-all duration-200 ${
                     recording
@@ -130,9 +130,9 @@ export default function AudioRecorder(props: {
                 onClick={handleToggleRecording}
             >
                 {recording
-                    ? `Stop Recording (${formatAudioTimestamp(duration)})`
-                    : "Start Recording"}
-            </button>
+                    ? `结束录音 (${formatAudioTimestamp(duration)})`
+                    : "开始录音"}
+            </button>)}
 
             {recordedBlob && (
                 <audio className='w-full' ref={audioRef} controls>

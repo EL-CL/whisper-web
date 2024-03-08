@@ -15,4 +15,10 @@ audio::-webkit-media-controls-panel {
 .container {
     width: 41rem /* 656px */;
     max-width: 95vw;
+    margin-top: 0.1em;
+    height: 790px;
+}
+
+.on-close-button-container {
+    margin-top: 0.8em;
 }

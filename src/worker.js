@@ -1,8 +1,12 @@
 /* eslint-disable camelcase */
 import { pipeline, env } from "@xenova/transformers";
 
-// Disable local models
-env.allowLocalModels = false;
+// https://huggingface.co/docs/transformers.js/en/custom_usage
+// Specify a custom location for models
+env.localModelPath = '/transcribeapp/models/';
+
+// Disable the loading of remote models from the Hugging Face Hub
+env.allowRemoteModels = false;
 
 // Define model factories
 // Ensures only one model is created of each type

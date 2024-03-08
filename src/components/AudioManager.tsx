@@ -11,7 +11,7 @@ import AudioRecorder from "./AudioRecorder";
 
 function titleCase(str: string) {
     str = str.toLowerCase();
-    return (str.match(/\w+.?/g) || [])
+    return (str.match(/\w+.?|.*语 /g) || [])
         .map((word) => {
             return word.charAt(0).toUpperCase() + word.slice(1);
         })
@@ -23,7 +23,7 @@ function titleCase(str: string) {
 // https://github.com/openai/whisper/blob/248b6cb124225dd263bb9bd32d060b6517e067f8/whisper/tokenizer.py#L79
 const LANGUAGES = {
     en: "english",
-    zh: "chinese",
+    zh: "汉语 chinese",
     de: "german",
     es: "spanish/castilian",
     ru: "russian",
@@ -241,18 +241,22 @@ export function AudioManager(props: { transcriber: Transcriber }) {
         <>
             <div className='flex flex-col justify-center items-center rounded-lg bg-white shadow-xl shadow-black/5 ring-1 ring-slate-700/10'>
                 <div className='flex flex-row space-x-2 py-2 w-full px-2'>
-                    <UrlTile
-                        icon={<AnchorIcon />}
-                        text={"From URL"}
-                        onUrlUpdate={(e) => {
-                            props.transcriber.onInputChange();
-                            setAudioDownloadUrl(e);
-                        }}
-                    />
-                    <VerticalBar />
+                    {navigator.mediaDevices && (
+                        <>
+                            <RecordTile
+                                icon={<MicrophoneIcon />}
+                                text={"录制音频"}
+                                setAudioData={(e) => {
+                                    props.transcriber.onInputChange();
+                                    setAudioFromRecording(e);
+                                }}
+                            />
+                            <VerticalBar />
+                        </>
+                    )}
                     <FileTile
                         icon={<FolderIcon />}
-                        text={"From file"}
+                        text={"打开音频"}
                         onFileUpdate={(decoded, blobUrl, mimeType) => {
                             props.transcriber.onInputChange();
                             setAudioData({
@@ -263,19 +267,12 @@ export function AudioManager(props: { transcriber: Transcriber }) {
                             });
                         }}
                     />
-                    {navigator.mediaDevices && (
-                        <>
-                            <VerticalBar />
-                            <RecordTile
-                                icon={<MicrophoneIcon />}
-                                text={"Record"}
-                                setAudioData={(e) => {
-                                    props.transcriber.onInputChange();
-                                    setAudioFromRecording(e);
-                                }}
-                            />
-                        </>
-                    )}
+                    <VerticalBar />
+                    <SettingsTile
+                        text={"模型选项"}
+                        transcriber={props.transcriber}
+                        icon={<SettingsIcon />}
+                    />
                 </div>
                 {
                     <AudioDataBar
@@ -299,17 +296,11 @@ export function AudioManager(props: { transcriber: Transcriber }) {
                             // isAudioLoading ||
                             isTranscribing={props.transcriber.isBusy}
                         />
-
-                        <SettingsTile
-                            className='absolute right-4'
-                            transcriber={props.transcriber}
-                            icon={<SettingsIcon />}
-                        />
                     </div>
                     {props.transcriber.progressItems.length > 0 && (
                         <div className='relative z-10 p-4 w-full'>
                             <label>
-                                Loading model files... (only run once)
+                                正在下载语音识别模型，请耐心等待
                             </label>
                             {props.transcriber.progressItems.map((data) => (
                                 <div key={data.file}>
@@ -329,7 +320,7 @@ export function AudioManager(props: { transcriber: Transcriber }) {
 
 function SettingsTile(props: {
     icon: JSX.Element;
-    className?: string;
+    text: string;
     transcriber: Transcriber;
 }) {
     const [showModal, setShowModal] = useState(false);
@@ -347,15 +338,15 @@ function SettingsTile(props: {
     };
 
     return (
-        <div className={props.className}>
-            <Tile icon={props.icon} onClick={onClick} />
+        <>
+            <Tile icon={props.icon} text={props.text} onClick={onClick} />
             <SettingsModal
                 show={showModal}
                 onSubmit={onSubmit}
                 onClose={onClose}
                 transcriber={props.transcriber}
             />
-        </div>
+        </>
     );
 }
 
@@ -381,10 +372,10 @@ function SettingsModal(props: {
     return (
         <Modal
             show={props.show}
-            title={"Settings"}
+            title={"模型选项"}
             content={
                 <>
-                    <label>Select the model to use.</label>
+                    <label>选择要使用的模型：</label>
                     <select
                         className='mt-1 mb-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={props.transcriber.model}
@@ -428,28 +419,28 @@ function SettingsModal(props: {
                                 }}
                             ></input>
                             <label htmlFor={"multilingual"} className='ms-1'>
-                                Multilingual
+                                使用多语模型
                             </label>
                         </div>
                         <div className='flex'>
                             <input
                                 id='quantize'
                                 type='checkbox'
-                                checked={props.transcriber.quantized}
+                                checked={!props.transcriber.quantized}
                                 onChange={(e) => {
                                     props.transcriber.setQuantized(
-                                        e.target.checked,
+                                        !e.target.checked,
                                     );
                                 }}
                             ></input>
                             <label htmlFor={"quantize"} className='ms-1'>
-                                Quantized
+                                使用高精度模型
                             </label>
                         </div>
                     </div>
                     {props.transcriber.multilingual && (
                         <>
-                            <label>Select the source language.</label>
+                            <label>选择音频语言：</label>
                             <select
                                 className='mt-1 mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                                 defaultValue={props.transcriber.language}
@@ -465,7 +456,7 @@ function SettingsModal(props: {
                                     </option>
                                 ))}
                             </select>
-                            <label>Select the task to perform.</label>
+                            <label>选择任务：</label>
                             <select
                                 className='mt-1 mb-3 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                                 defaultValue={props.transcriber.subtask}
@@ -475,10 +466,8 @@ function SettingsModal(props: {
                                     );
                                 }}
                             >
-                                <option value={"transcribe"}>Transcribe</option>
-                                <option value={"translate"}>
-                                    Translate (to English)
-                                </option>
+                                <option value={"transcribe"}>转写</option>
+                                <option value={"translate"}>翻译成英语</option>
                             </select>
                         </>
                     )}
@@ -680,17 +669,17 @@ function RecordModal(props: {
     return (
         <Modal
             show={props.show}
-            title={"From Recording"}
+            title={"使用麦克风录制音频"}
             content={
                 <>
-                    {"Record audio using your microphone"}
                     <AudioRecorder onRecordingComplete={onRecordingComplete} />
                 </>
             }
             onClose={onClose}
-            submitText={"Load"}
+            submitText={"使用录音"}
             submitEnabled={audioBlob !== undefined}
             onSubmit={onSubmit}
+            closeText={"放弃录音"}
         />
     );
 }

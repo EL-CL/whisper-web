@@ -58,7 +58,7 @@ export default function Transcript({ transcribedData }: Props) {
     return (
         <div
             ref={divRef}
-            className='w-full flex flex-col my-2 p-4 max-h-[20rem] overflow-y-auto'
+            className='w-full flex flex-col my-2 p-4 overflow-y-auto'
         >
             {transcribedData?.chunks &&
                 transcribedData.chunks.map((chunk, i) => (
@@ -74,17 +74,18 @@ export default function Transcript({ transcribedData }: Props) {
                 ))}
             {transcribedData && !transcribedData.isBusy && (
                 <div className='w-full text-right'>
+                    下载识别结果：
                     <button
                         onClick={exportTXT}
                         className='text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center'
                     >
-                        Export TXT
+                        TXT
                     </button>
                     <button
                         onClick={exportJSON}
                         className='text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center'
                     >
-                        Export JSON
+                        JSON
                     </button>
                 </div>
             )}
