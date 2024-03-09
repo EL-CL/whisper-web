@@ -67,8 +67,8 @@ export default function Modal({
                                             className={`inline-flex ml-4 justify-center rounded-md border border-transparent ${
                                                 submitEnabled
                                                     ? "bg-indigo-600"
-                                                    : "bg-grey-300"
-                                            } px-4 py-2 text-sm font-medium text-indigo-100 ${
+                                                    : "bg-gray-300"
+                                            } px-4 py-2 text-sm font-medium text-white ${
                                                 submitEnabled
                                                     ? "hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
                                                     : ""

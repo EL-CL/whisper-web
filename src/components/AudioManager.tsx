@@ -286,15 +286,18 @@ export function AudioManager(props: { transcriber: Transcriber }) {
                         audioUrl={audioData.url}
                         mimeType={audioData.mimeType}
                     />
-
-                    <div className='relative w-full flex justify-center items-center'>
+                </>
+            )}
+                <>
+                    <div className={`relative w-full flex justify-center items-center ${audioData ? "" : "p-4"}`}>
                         <TranscribeButton
                             onClick={() => {
-                                props.transcriber.start(audioData.buffer);
+                                props.transcriber.start(audioData?.buffer);
                             }}
                             isModelLoading={props.transcriber.isModelLoading}
                             // isAudioLoading ||
                             isTranscribing={props.transcriber.isBusy}
+                            hasAudio={Boolean(audioData)}
                         />
                     </div>
                     {props.transcriber.progressItems.length > 0 && (
@@ -313,7 +316,6 @@ export function AudioManager(props: { transcriber: Transcriber }) {
                         </div>
                     )}
                 </>
-            )}
         </>
     );
 }

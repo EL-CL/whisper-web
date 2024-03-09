@@ -1,10 +1,11 @@
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isModelLoading: boolean;
     isTranscribing: boolean;
+    hasAudio: boolean;
 }
 
 export function TranscribeButton(props: Props): JSX.Element {
-    const { isModelLoading, isTranscribing, onClick, ...buttonProps } = props;
+    const { isModelLoading, isTranscribing, onClick, hasAudio, ...buttonProps } = props;
     return (
         <button
             {...buttonProps}
@@ -13,8 +14,12 @@ export function TranscribeButton(props: Props): JSX.Element {
                     onClick(event);
                 }
             }}
-            disabled={isTranscribing}
-            className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center'
+            disabled={isTranscribing || !hasAudio}
+            className={`${
+                hasAudio
+                    ? "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
+                    : "text-white bg-gray-300"
+            } font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 inline-flex items-center transition-all duration-300`}
         >
             {isModelLoading ? (
                 <Spinner text={"下载模型……"} />
