@@ -22,3 +22,19 @@ audio::-webkit-media-controls-panel {
 .on-close-button-container {
     margin-top: 0.8em;
 }
+
+@media screen and (max-width: 500px) and (min-width: 400px) {
+    .p-2 {
+        padding-left: 0.15rem;
+        padding-right: 0.15rem;
+    }
+    .ml-2 {
+        margin-left: 0.15rem;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .ml-2 {
+        max-width: 2em;
+    }
+}
